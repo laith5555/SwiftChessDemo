@@ -76,16 +76,20 @@ if ! grep -Fq "../StockfishEmbedded/Resources/NNUE/$stockfish_nnue_file" \
   exit 1
 fi
 
-printf 'Running app-hosted unit tests without simulator UI tests...\n'
-xcodebuild \
-  -project SwiftChessDemo.xcodeproj \
-  -scheme SwiftChessDemo \
-  -configuration Debug \
-  -destination "$SIMULATOR_DESTINATION" \
-  -derivedDataPath "$TEST_DERIVED_DATA" \
-  -clonedSourcePackagesDirPath "$SOURCE_PACKAGES_DIR" \
-  -skip-testing:SwiftChessDemoUITests \
-  test
+if [[ "${SKIP_SIMULATOR_TESTS:-false}" != "true" ]]; then
+  printf 'Running app-hosted unit tests without simulator UI tests...\n'
+  xcodebuild \
+    -project SwiftChessDemo.xcodeproj \
+    -scheme SwiftChessDemo \
+    -configuration Debug \
+    -destination "$SIMULATOR_DESTINATION" \
+    -derivedDataPath "$TEST_DERIVED_DATA" \
+    -clonedSourcePackagesDirPath "$SOURCE_PACKAGES_DIR" \
+    -skip-testing:SwiftChessDemoUITests \
+    test
+else
+  printf 'Skipping simulator tests; no simulator runtime is available.\n'
+fi
 
 printf 'Building the generic iOS Release configuration...\n'
 xcodebuild \
