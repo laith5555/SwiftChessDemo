@@ -12,30 +12,53 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 25
 
-    steps:
-      - name: Check out SwiftChessDemo
-        uses: actions/checkout@v7
-        with:
-          path: SwiftChessDemo
-          persist-credentials: false
+    name: SwiftChessDemo CI
 
-      - name: Check out SwiftChessTools
-        uses: actions/checkout@v7
-        with:
-          repository: Trickfest/SwiftChessTools
-          path: SwiftChessTools
-          persist-credentials: false
+on:
+workflow_dispatch:
 
-      - name: Check out StockfishEmbedded
-        uses: actions/checkout@v7
-        with:
-          repository: Trickfest/StockfishEmbedded
-          path: StockfishEmbedded
-          persist-credentials: false
+permissions:
+contents: read
 
-      - name: Download Stockfish NNUE weights
-        run: StockfishEmbedded/Scripts/download-nnue.sh
+jobs:
+xcode-tests:
+name: Xcode Tests
+runs-on: macos-26
+timeout-minutes: 25
 
-      - name: Run hosted headless checks
-        working-directory: SwiftChessDemo
-        run: Scripts/github-ci.sh
+steps:
+  - name: Check out SwiftChessDemo
+    uses: actions/checkout@v7
+    with:
+      path: SwiftChessDemo
+      persist-credentials: false
+
+  - name: Check out SwiftChessTools
+    uses: actions/checkout@v7
+    with:
+      repository: Trickfest/SwiftChessTools
+      path: SwiftChessTools
+      persist-credentials: false
+
+  - name: Check out StockfishEmbedded
+    uses: actions/checkout@v7
+    with:
+      repository: Trickfest/StockfishEmbedded
+      path: StockfishEmbedded
+      persist-credentials: false
+
+  - name: Download Stockfish NNUE weights
+    run: StockfishEmbedded/Scripts/download-nnue.sh
+
+  - name: Run hosted headless checks
+    working-directory: SwiftChessDemo
+    run: Scripts/github-ci.sh
+
+  - name: Upload unsigned iOS app bundle
+    uses: actions/upload-artifact@v4
+    with:
+      name: SwiftChessDemo-unsigned-app
+      path: SwiftChessDemo/.build/xcode-swiftchessdemo-release/Build/Products/Release-iphoneos/SwiftChessDemo.app
+      if-no-files-found: error
+      retention-days: 3
+          retention-days: 3
