@@ -140,6 +140,12 @@ struct ContentView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .disabled(scenarioLoadingError != nil || scenarioIndexValidationError != nil)
+
+
+                    NavigationLink("Lichess Bot") {
+                        LichessBotView()
+                    }
+                    .buttonStyle(.bordered)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
